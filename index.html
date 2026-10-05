@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Library Management System</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Tokens */
+:root{--pri:#5b5bf0;--pri2:#9a5cf6;--on:#fff;--bg:#f5f6fb;--card:#fff;--tx:#14172b;--mut:#6b7190;--bd:#e6e8f2;--ok:#0f9d58;--warn:#c77700;--bad:#d92d20;--r:16px;--sh:0 1px 2px rgba(20,23,43,.05),0 8px 24px -8px rgba(20,23,43,.1);--shl:0 2px 4px rgba(20,23,43,.06),0 18px 40px -12px rgba(91,91,240,.3);--g:linear-gradient(135deg,var(--pri),var(--pri2));--hd:'Fraunces',Georgia,serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--pri:#8b8bff;--pri2:#b48cff;--on:#10122a;--bg:#0b0d1a;--card:#141830;--tx:#eceffb;--mut:#9aa0c0;--bd:#252a48;--ok:#4cd68a;--warn:#f5b84f;--bad:#ff8277;--sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px -8px rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{--pri:#8b8bff;--pri2:#b48cff;--on:#10122a;--bg:#0b0d1a;--card:#141830;--tx:#eceffb;--mut:#9aa0c0;--bd:#252a48;--ok:#4cd68a;--warn:#f5b84f;--bad:#ff8277;--sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px -8px rgba(0,0,0,.5);color-scheme:dark}
+/* Global */
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;font:15px/1.55 'Inter',system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);-webkit-font-smoothing:antialiased;background-image:radial-gradient(900px 400px at 85% -10%,color-mix(in srgb,var(--pri) 14%,transparent),transparent),radial-gradient(700px 360px at 0 0,color-mix(in srgb,var(--pri2) 10%,transparent),transparent);background-attachment:fixed}
+h1,h2,h3{margin:0 0 .5rem;font-family:var(--hd);letter-spacing:-.01em}h2{font-size:1.2rem}h3{font-size:1rem}[hidden]{display:none!important}
+::selection{background:var(--pri);color:var(--on)}
+/* Login */
+#login{min-height:100vh;display:grid;place-items:center;padding:1rem;background:radial-gradient(600px 420px at 20% 20%,rgba(154,92,246,.38),transparent),radial-gradient(600px 420px at 80% 80%,rgba(91,91,240,.38),transparent),#0b0d1a}
+.lbox{background:rgba(255,255,255,.07);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.16);border-radius:22px;padding:2.2rem;width:100%;max-width:400px;box-shadow:0 30px 80px -20px rgba(0,0,0,.6);color:#eceffb;animation:up .5s both}
+.lbox h1{font-size:1.8rem}.lbox .lbl{color:#b4b9d6;margin-bottom:1rem}.lbox label{color:#b4b9d6}
+.lbox input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:#fff}
+.lbox .btn.g{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.18)}
+/* Sidebar */
+#app{display:flex;min-height:100vh}
+aside{width:248px;background:linear-gradient(180deg,#14173a,#0b0d1f);border-right:1px solid rgba(255,255,255,.06);padding:1.1rem .8rem;position:sticky;top:0;height:100vh;flex-shrink:0;overflow-y:auto}
+aside .logo{font:700 1.25rem var(--hd);padding:.4rem .7rem 1.4rem;color:#fff}
+aside button{display:flex;align-items:center;gap:.65rem;width:100%;text-align:left;background:none;border:0;color:#aab0d4;padding:.65rem .8rem;border-radius:12px;cursor:pointer;font:inherit;font-weight:500;font-size:.92rem;margin-bottom:3px;transition:background .15s,color .15s}
+aside button:hover{background:rgba(255,255,255,.07);color:#fff}
+aside button.on{background:var(--g);color:#fff;box-shadow:0 10px 22px -10px var(--pri)}
+.nb{margin-left:auto;background:#ef4444;color:#fff;border-radius:99px;font-size:.72rem;font-weight:700;padding:0 .5rem}
+.wrap{flex:1;min-width:0}
+/* Header */
+header{display:flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:20;align-items:center;gap:.75rem;padding:.8rem 1.5rem;background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--bd)}
+header strong{font:600 1.2rem var(--hd);flex:1}#burger{display:none}
+main{padding:1.5rem;max-width:1240px;margin:0 auto;animation:up .35s both}
+.hero{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border-radius:22px;padding:1.6rem 1.8rem;margin-bottom:1.2rem;box-shadow:var(--shl);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-70px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.14)}
+.hero h1{font-size:1.7rem;margin:0}.hero p{margin:.3rem 0 0;opacity:.85}
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem;margin-bottom:1.2rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:1.2rem;box-shadow:var(--sh);margin-bottom:1rem;transition:transform .2s,box-shadow .2s}
+.cards .card{margin:0;position:relative;overflow:hidden}.cards .card:hover{transform:translateY(-3px);box-shadow:var(--shl)}
+.cards .card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--g)}
+.cards .card:nth-child(3n+2)::before{background:linear-gradient(90deg,#06b6d4,#3b82f6)}.cards .card:nth-child(3n)::before{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.stat{font:700 1.9rem var(--hd);letter-spacing:-.02em}.lbl{color:var(--mut);font-size:.85rem}
+.qa{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.2rem}
+.pb,.bar i{display:block;height:8px;border-radius:9px;background:var(--bd);overflow:hidden;margin-top:.5rem}.pb u,.bar u{display:block;height:100%;background:var(--g);border-radius:9px;text-decoration:none}
+.bar{display:grid;grid-template-columns:110px 1fr 28px;gap:.6rem;align-items:center;font-size:.85rem;padding:.3rem 0}.bar i{margin:0}.bar b{text-align:right}
+/* Tables */
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.88rem}
+th,td{padding:.75rem .85rem;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mut);font-weight:600;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+tbody tr{transition:background .15s}tbody tr:hover{background:color-mix(in srgb,var(--pri) 7%,transparent)}tbody tr:last-child td{border-bottom:0}
+.empty{padding:2.5rem;text-align:center;color:var(--mut)}
+/* Forms + Buttons */
+label{display:block;font-size:.8rem;font-weight:600;margin-bottom:.3rem;color:var(--mut)}
+input,select{width:100%;padding:.62rem .75rem;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);font:inherit;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus{outline:0;border-color:var(--pri);box-shadow:0 0 0 4px color-mix(in srgb,var(--pri) 20%,transparent)}button:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.9rem}
+.tb{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1rem}.tb>*{flex:1 1 150px;width:auto}
+.btn{background:var(--g);color:var(--on);border:0;border-radius:12px;padding:.6rem 1.1rem;cursor:pointer;font:inherit;font-weight:600;width:auto;box-shadow:0 8px 18px -8px var(--pri);transition:transform .15s,filter .15s}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.07)}.btn:active{transform:none}
+.btn.s{background:transparent;color:var(--pri);border:1px solid var(--bd);padding:.28rem .65rem;font-size:.8rem;margin-right:4px;box-shadow:none;border-radius:9px}.btn.s:hover{background:color-mix(in srgb,var(--pri) 10%,transparent);border-color:var(--pri)}
+.btn.d{color:var(--bad)}.btn.s.d:hover{background:color-mix(in srgb,var(--bad) 10%,transparent);border-color:var(--bad)}
+.btn.g{background:var(--card);color:var(--tx);border:1px solid var(--bd);box-shadow:none}.btn.g.d{color:var(--bad)}
+.err{color:var(--bad);font-size:.85rem;min-height:1.2em;margin:.4rem 0}
+.tabs{display:flex;gap:.3rem;margin-bottom:1rem;flex-wrap:wrap;background:var(--card);padding:.35rem;border:1px solid var(--bd);border-radius:14px;width:fit-content;max-width:100%}
+.tabs .btn{background:transparent;color:var(--mut);border:0;box-shadow:none}.tabs .btn.on{background:var(--g);color:var(--on)}
+/* Modals + Toast */
+dialog{border:1px solid var(--bd);border-radius:20px;background:var(--card);color:var(--tx);padding:1.5rem;width:min(580px,94vw);box-shadow:0 40px 90px -20px rgba(0,0,0,.5)}
+dialog[open]{animation:pop .22s both}dialog::backdrop{background:rgba(8,10,25,.55);backdrop-filter:blur(4px)}
+.acts{display:flex;gap:.5rem;justify-content:flex-end;margin-top:1.2rem}
+#toasts{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));display:grid;gap:.5rem;z-index:99}
+.toast{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-left:4px solid var(--pri);padding:.75rem 1.1rem;border-radius:12px;box-shadow:var(--shl);animation:up .3s both}
+/* Badges + Reports */
+.b{display:inline-flex;align-items:center;gap:.35rem;padding:.15rem .65rem;border-radius:99px;font-size:.74rem;font-weight:600;background:color-mix(in srgb,currentColor 12%,transparent)}
+.b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.b.ok{color:var(--ok)}.b.warn{color:var(--warn)}.b.bad{color:var(--bad)}.b.n{color:var(--mut)}
+.kv{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px dashed var(--bd)}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+/* Responsive + Motion */
+@media(max-width:800px){aside{position:fixed;z-index:50;transform:translateX(-100%);transition:transform .25s;box-shadow:20px 0 60px rgba(0,0,0,.4)}aside.open{transform:none}#burger{display:inline-flex}header{padding:.7rem 1rem}main{padding:1rem}.hero{padding:1.2rem}}
+@keyframes up{from{opacity:0;transform:translateY(10px)}}@keyframes pop{from{opacity:0;transform:scale(.96)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<section id="login">
+ <form class="lbox" id="lf" novalidate>
+  <h1>📚 Library System</h1><p class="lbl">Sign in to continue (demo: admin / admin123)</p>
+  <label for="u">Username</label><input id="u" autocomplete="username">
+  <label for="p" style="margin-top:.7rem">Password</label>
+  <div style="display:flex;gap:.4rem"><input id="p" type="password" autocomplete="current-password"><button type="button" class="btn g" id="sp" aria-label="Show or hide password">Show</button></div>
+  <div class="err" id="le" role="alert"></div>
+  <button class="btn" style="width:100%" id="lb">Login</button>
+ </form>
+</section>
+<div id="app" hidden>
+ <aside id="side"><div class="logo">📚 Library</div><nav id="nav" aria-label="Main"></nav></aside>
+ <div class="wrap">
+  <header><button class="btn g" id="burger" aria-label="Menu">☰</button><strong id="ht">Library</strong></header>
+  <main id="main"></main>
+ </div>
+</div>
+<dialog id="dlg"></dialog>
+<div id="toasts" aria-live="polite"></div>
+<script>
+// ========================== CONFIGURATION
+const K={b:'library_books',m:'library_members',t:'library_transactions',f:'library_fines',s:'library_settings',a:'library_auth'};
+const CRED={u:'admin',p:'admin123'};
+const DEF={name:'City Central Library',librarian:'Admin',email:'library@example.com',phone:'9876543210',loan:14,maxBooks:3,maxRenew:2,finePerDay:5};
+const NAV=[['dashboard','🏠','Dashboard'],['books','📚','Books'],['members','👥','Members'],['issue','🔄','Issue / Return'],['fines','💰','Fines'],['reports','📊','Reports'],['settings','⚙️','Settings']];
+// ========================== APPLICATION STATE
+const S={view:'dashboard',tab:'issue',f:{bq:'',bcat:'',bav:'',bsort:'title',mq:'',mst:'',tq:'',rr:'all',rf:'',rt:''}};
+// ========================== LOCAL STORAGE
+const mem={};
+const load=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v??(mem[k]??d)}catch{return mem[k]??d}};
+const save=(k,v)=>{mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+const arr=k=>{const v=load(k,[]);return Array.isArray(v)?v:[]};
+const getBooks=()=>arr(K.b),saveBooks=v=>save(K.b,v);
+const getMembers=()=>arr(K.m),saveMembers=v=>save(K.m,v);
+const getTransactions=()=>arr(K.t),saveTransactions=v=>save(K.t,v);
+const getFines=()=>arr(K.f),saveFines=v=>save(K.f,v);
+const getSettings=()=>({...DEF,...(load(K.s,{})||{})}),saveSettings=v=>save(K.s,v);
+// ========================== DATES
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>iso(new Date());
+const D=s=>new Date(s+'T00:00:00');
+const addDays=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return iso(d)};
+const calculateDueDate=s=>addDays(s,getSettings().loan);
+const dayDiff=(a,b)=>Math.round((D(b)-D(a))/864e5);
+const formatDate=s=>{const d=s&&D(s);return d&&!isNaN(d)?d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—'};
+const calculateDaysOverdue=t=>t.dueDate?Math.max(0,dayDiff(t.dueDate,t.returnDate||today())):0;
+const isOverdue=t=>!t.returnDate&&today()>t.dueDate;
+// ========================== BUSINESS HELPERS
+const calculateFine=days=>Math.max(0,days)*Number(getSettings().finePerDay);
+const txStatus=t=>t.returnDate?'Returned':isOverdue(t)?'Overdue':'Issued';
+const fineStatus=f=>f.remainingAmount<=0?'Paid':f.paidAmount>0?'Partial':'Pending';
+const bookStatus=b=>b.availableCopies>0?'Available':'Out of Stock';
+const active=()=>getTransactions().filter(t=>!t.returnDate);
+const book=id=>getBooks().find(b=>b.id===id);
+const member=id=>getMembers().find(m=>m.id===id);
+const bt=id=>book(id)?.title??'(deleted book)';
+const mn=id=>member(id)?.name??'(deleted member)';
+const nextId=(list,p,n)=>{let i=list.length+1;while(list.some(x=>x.id===p+String(i).padStart(n,'0')))i++;return p+String(i).padStart(n,'0')};
+// ========================== UI HELPERS
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inr=n=>'₹'+Number(n||0).toLocaleString('en-IN');
+const cls={Available:'ok',Issued:'n',Returned:'ok',Paid:'ok',Active:'ok','Out of Stock':'bad',Overdue:'bad',Pending:'bad',Partial:'warn',Inactive:'n'};
+const badge=s=>`<span class="b ${cls[s]||'n'}">${esc(s)}</span>`;
+function toast(msg){const e=document.createElement('div');e.className='toast';e.textContent=msg;$('#toasts').append(e);setTimeout(()=>e.remove(),3200)}
+function table(h,rows,empty){return rows.length?`<div class="tw"><table><thead><tr>${h.map(x=>`<th scope="col">${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:`<div class="empty">${empty}</div>`}
+const btn=(a,id,t,c='')=>`<button class="btn s ${c}" data-act="${a}" data-id="${esc(id)}">${t}</button>`;
+function field([n,l,t='text',v='',o={}]){const a=`id="f_${n}" name="${n}"${o.ro?' readonly':''}${o.min!=null?` min="${o.min}"`:''}${o.step?` step="${o.step}"`:''}`;
+ const inp=t==='select'?`<select ${a}>${o.opts.map(([x,y])=>`<option value="${esc(x)}"${x==v?' selected':''}>${esc(y)}</option>`).join('')}</select>`:`<input ${a} type="${t}" value="${esc(v)}">`;
+ return `<div><label for="f_${n}">${l}</label>${inp}</div>`}
+function modal(title,fields,onSave,label='Save'){const d=$('#dlg');
+ d.innerHTML=`<form method="dialog" novalidate id="mf"><h2>${title}</h2><div class="fg">${fields.map(field).join('')}</div><div class="err" id="me" role="alert"></div><div class="acts"><button type="button" class="btn g" id="mc">Cancel</button><button class="btn">${label}</button></div></form>`;
+ d.showModal();$('#mc').onclick=()=>d.close();
+ $('#mf').onsubmit=e=>{e.preventDefault();const v=Object.fromEntries(new FormData(e.target));const er=onSave(v);if(er)$('#me').textContent=er;else d.close()}}
+function info(title,html){const d=$('#dlg');d.innerHTML=`<h2>${title}</h2>${html}<div class="acts"><button class="btn" id="mc">Close</button></div>`;d.showModal();$('#mc').onclick=()=>d.close()}
+function confirmBox(msg,fn){const d=$('#dlg');d.innerHTML=`<h2>Please confirm</h2><p>${msg}</p><div class="acts"><button class="btn g" id="mc">Cancel</button><button class="btn" id="mo">Confirm</button></div>`;d.showModal();$('#mc').onclick=()=>d.close();$('#mo').onclick=()=>{d.close();fn()}}
+// ========================== VALIDATION
+const emailOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+const phoneOk=p=>/^[0-9+\-\s]{10,13}$/.test(p);
+// ========================== AUTHENTICATION
+const loggedIn=()=>{try{return sessionStorage.getItem(K.a)==='1'}catch{return !!mem[K.a]}};
+const setAuth=v=>{mem[K.a]=v;try{v?sessionStorage.setItem(K.a,'1'):sessionStorage.removeItem(K.a)}catch{}};
+function showApp(){const on=loggedIn();$('#login').hidden=on;$('#app').hidden=!on;if(on){seed();render()}}
+$('#sp').onclick=()=>{const p=$('#p');p.type=p.type==='password'?'text':'password';$('#sp').textContent=p.type==='password'?'Show':'Hide'};
+$('#lf').onsubmit=e=>{e.preventDefault();const u=$('#u').value.trim(),p=$('#p').value;
+ if(!u||!p){$('#le').textContent='Enter both username and password.';return}
+ $('#lb').textContent='Signing in…';
+ setTimeout(()=>{$('#lb').textContent='Login';if(u===CRED.u&&p===CRED.p){$('#le').textContent='';setAuth(true);showApp()}else $('#le').textContent='Incorrect username or password.'},350)};
+// ========================== SAMPLE DATA
+function seed(){if(localStorage.getItem?.call(localStorage,K.b)!==null&&getBooks().length)return;
+ try{if(localStorage.getItem(K.b)!==null)return}catch{if(mem[K.b])return}
+ const mk=(id,isbn,t,a,c,p,y,n)=>({id,isbn,title:t,author:a,category:c,publisher:p,publicationYear:y,totalCopies:n,availableCopies:n,createdAt:new Date().toISOString()});
+ const books=[mk('B001','9780132350884','Clean Code','Robert C. Martin','Programming','Prentice Hall',2008,4),mk('B002','9780262033848','Introduction to Algorithms','Cormen et al.','Computer Science','MIT Press',2009,3),mk('B003','9780141439518','Pride and Prejudice','Jane Austen','Fiction','Penguin',2002,2),mk('B004','9780553380163','A Brief History of Time','Stephen Hawking','Science','Bantam',1998,3),mk('B005','9780743273565','The Great Gatsby','F. Scott Fitzgerald','Fiction','Scribner',2004,2),mk('B006','9781491950296','Programming JavaScript Apps','Eric Elliott','Programming','O\'Reilly',2014,2),mk('B007','9780140449136','The Republic','Plato','Philosophy','Penguin',2007,1),mk('B008','9780199232765','The Wealth of Nations','Adam Smith','Economics','Oxford',2008,2),mk('B009','9780073523323','Operating System Concepts','Silberschatz','Computer Science','Wiley',2018,3)];
+ const mb=(id,n,e,p,d,r,s='Active')=>({id,name:n,email:e,phone:p,department:d,registrationDate:r,status:s});
+ const members=[mb('M001','Aarav Sharma','aarav@example.com','9876543210','CSE','2026-01-10'),mb('M002','Priya Verma','priya@example.com','9876501234','ECE','2026-01-15'),mb('M003','Rohan Gupta','rohan@example.com','9812345678','Mechanical','2026-02-01'),mb('M004','Sneha Singh','sneha@example.com','9898989898','CSE','2026-02-12'),mb('M005','Vikram Rao','vikram@example.com','9877712345','Civil','2026-03-05','Inactive'),mb('M006','Ananya Iyer','ananya@example.com','9855512345','IT','2026-03-20')];
+ const tx=[],fines=[];const T=(b,m,ago,ret,rc=0)=>{const issue=addDays(today(),-ago),due=addDays(issue,14);const t={id:nextId(tx,'TXN-',4),bookId:b,memberId:m,issueDate:issue,dueDate:due,returnDate:ret==null?null:addDays(issue,ret),status:'Issued',renewalCount:rc};tx.push(t);
+  const bk=books.find(x=>x.id===b);if(ret==null)bk.availableCopies--;
+  else{const od=calculateDaysOverdue(t);t.status='Returned';if(od>0){const amt=calculateFine(od);fines.push({id:nextId(fines,'F',3),transactionId:t.id,memberId:m,bookId:b,overdueDays:od,fineAmount:amt,paidAmount:fines.length?0:amt,remainingAmount:fines.length?amt:0,status:fines.length?'Pending':'Paid',createdAt:new Date().toISOString()})}}};
+ T('B001','M001',30,12);T('B002','M002',25,20);T('B003','M003',3,null);T('B004','M001',20,null);T('B005','M004',8,null,1);T('B007','M002',18,null);T('B009','M006',5,null);T('B006','M004',40,35);
+ saveBooks(books);saveMembers(members);saveTransactions(tx);saveFines(fines)}
+// ========================== NAVIGATION
+function go(v){S.view=v;$('#side').classList.remove('open');render()}
+function render(){$('#nav').innerHTML=NAV.map(([k,i,l])=>`<button data-act="go" data-id="${k}" class="${S.view===k?'on':''}" ${S.view===k?'aria-current="page"':''}>${i} ${l}</button>`).join('')+`<button data-act="logout">🚪 Logout</button>`;
+ $('#ht').textContent=NAV.find(n=>n[0]===S.view)[2];$('#main').innerHTML=VIEWS[S.view]();fill()}
+function fill(){const t=$('#tbl');if(t&&FILL[S.view])t.innerHTML=FILL[S.view]()}
+// ========================== DASHBOARD
+function stats(){const bs=getBooks(),a=active(),od=a.filter(isOverdue);const accrued=od.reduce((s,t)=>s+calculateFine(calculateDaysOverdue(t)),0);
+ return{books:bs.reduce((s,b)=>s+Number(b.totalCopies||0),0),members:getMembers().length,avail:bs.reduce((s,b)=>s+Number(b.availableCopies||0),0),issued:a.length,overdue:od.length,pending:getFines().reduce((s,f)=>s+f.remainingAmount,0)+accrued}}
+const txRow=t=>[esc(t.id),esc(bt(t.bookId)),esc(mn(t.memberId)),formatDate(t.issueDate),formatDate(t.dueDate),formatDate(t.returnDate),badge(txStatus(t))];
+function dashboard(){const s=stats(),c=(l,v)=>`<div class="card"><div class="lbl">${l}</div><div class="stat">${v}</div></div>`;
+ const recent=getTransactions().slice().reverse().slice(0,6).map(txRow);
+ const od=active().filter(isOverdue).map(t=>{const d=calculateDaysOverdue(t);return[esc(bt(t.bookId)),esc(mn(t.memberId)),formatDate(t.dueDate),d,inr(calculateFine(d)),badge('Overdue')]});
+ return `<div class="cards">${c('📚 Total Books',s.books)}${c('👥 Total Members',s.members)}${c('✅ Available Books',s.avail)}${c('🔄 Issued Books',s.issued)}${c('⚠️ Overdue Books',s.overdue)}${c('💰 Pending Fine',inr(s.pending))}</div>
+ <div class="qa"><button class="btn" data-act="addBook">+ Add Book</button><button class="btn" data-act="addMember">+ Add Member</button><button class="btn" data-act="tab" data-id="issue">Issue Book</button><button class="btn" data-act="tab" data-id="active">Return Book</button></div>
+ <div class="card"><h2>Recent Transactions</h2>${table(['ID','Book','Member','Issued','Due','Returned','Status'],recent,'No transactions found.')}</div>
+ <div class="card"><h2>Overdue Books</h2>${table(['Book','Member','Due','Days Overdue','Fine','Status'],od,'No overdue books.')}</div>`}
+// ========================== BOOK MANAGEMENT
+function booksView(){const f=S.f,cats=[...new Set(getBooks().map(b=>b.category))].sort();
+ return `<div class="tb"><button class="btn" data-act="addBook" style="flex:0 0 auto">+ Add Book</button><input data-f="bq" placeholder="Search ID, ISBN, title, author, category" aria-label="Search books" value="${esc(f.bq)}">
+ <select data-f="bcat" aria-label="Category"><option value="">All categories</option>${cats.map(c=>`<option${f.bcat===c?' selected':''}>${esc(c)}</option>`).join('')}</select>
+ <select data-f="bav" aria-label="Availability"><option value="">All status</option><option${f.bav==='Available'?' selected':''}>Available</option><option${f.bav==='Out of Stock'?' selected':''}>Out of Stock</option></select>
+ <select data-f="bsort" aria-label="Sort"><option value="title">Sort: Title</option><option value="author"${f.bsort==='author'?' selected':''}>Sort: Author</option><option value="availableCopies"${f.bsort==='availableCopies'?' selected':''}>Sort: Available</option><option value="publicationYear"${f.bsort==='publicationYear'?' selected':''}>Sort: Year</option></select></div><div class="card" id="tbl"></div>`}
+function booksFill(){const f=S.f,q=f.bq.toLowerCase(),k=f.bsort;
+ const l=getBooks().filter(b=>(!q||[b.id,b.isbn,b.title,b.author,b.category].some(x=>String(x).toLowerCase().includes(q)))&&(!f.bcat||b.category===f.bcat)&&(!f.bav||bookStatus(b)===f.bav))
+  .sort((a,b)=>typeof a[k]==='number'?b[k]-a[k]:String(a[k]).localeCompare(String(b[k])));
+ return table(['ID','ISBN','Title','Author','Category','Publisher','Year','Total','Avail.','Status','Actions'],l.map(b=>[esc(b.id),esc(b.isbn),esc(b.title),esc(b.author),esc(b.category),esc(b.publisher),b.publicationYear,b.totalCopies,b.availableCopies,badge(bookStatus(b)),btn('viewBook',b.id,'View')+btn('editBook',b.id,'Edit')+btn('delBook',b.id,'Delete','d')]),'No books found.')}
+function bookForm(id){const b=id?book(id):{};
+ modal(id?'Edit Book':'Add Book',[['id','Book ID','text',b.id||nextId(getBooks(),'B',3),{ro:!!id}],['isbn','ISBN','text',b.isbn||''],['title','Title','text',b.title||''],['author','Author','text',b.author||''],['category','Category','text',b.category||''],['publisher','Publisher','text',b.publisher||''],['publicationYear','Publication Year','number',b.publicationYear||new Date().getFullYear()],['totalCopies','Total Copies','number',b.totalCopies||1,{min:1}]],v=>{
+  const bs=getBooks(),y=+v.publicationYear,n=+v.totalCopies;v.id=v.id.trim();
+  if(!v.id||!v.title.trim()||!v.author.trim())return'Book ID, title and author are required.';
+  if(!(n>0))return'Total copies must be greater than 0.';
+  if(!(y>=1000&&y<=new Date().getFullYear()+1))return'Enter a valid publication year.';
+  if(bs.some(x=>x.id!==id&&x.id===v.id))return'Duplicate Book ID.';
+  if(v.isbn&&bs.some(x=>x.id!==id&&x.isbn===v.isbn.trim()))return'Duplicate ISBN.';
+  const rec={...b,id:v.id,isbn:v.isbn.trim(),title:v.title.trim(),author:v.author.trim(),category:v.category.trim()||'General',publisher:v.publisher.trim(),publicationYear:y,totalCopies:n};
+  if(id){const out=b.totalCopies-b.availableCopies;if(n<out)return`${out} copies are currently issued; total cannot be lower.`;rec.availableCopies=n-out;saveBooks(bs.map(x=>x.id===id?rec:x));toast('Book updated successfully.')}
+  else{rec.availableCopies=n;rec.createdAt=new Date().toISOString();bs.push(rec);saveBooks(bs);toast('Book added successfully.')}
+  render()})}
+// ========================== MEMBER MANAGEMENT
+const activeCount=id=>active().filter(t=>t.memberId===id).length;
+function membersView(){const f=S.f;
+ return `<div class="tb"><button class="btn" data-act="addMember" style="flex:0 0 auto">+ Add Member</button><input data-f="mq" placeholder="Search ID, name, email, phone" aria-label="Search members" value="${esc(f.mq)}"><select data-f="mst" aria-label="Status"><option value="">All</option><option${f.mst==='Active'?' selected':''}>Active</option><option${f.mst==='Inactive'?' selected':''}>Inactive</option></select></div><div class="card" id="tbl"></div>`}
+function membersFill(){const f=S.f,q=f.mq.toLowerCase();
+ const l=getMembers().filter(m=>(!q||[m.id,m.name,m.email,m.phone].some(x=>String(x).toLowerCase().includes(q)))&&(!f.mst||m.status===f.mst));
+ return table(['ID','Name','Email','Phone','Dept/Class','Registered','Active Issues','Status','Actions'],l.map(m=>[esc(m.id),esc(m.name),esc(m.email),esc(m.phone),esc(m.department),formatDate(m.registrationDate),activeCount(m.id),badge(m.status),btn('viewMember',m.id,'View')+btn('editMember',m.id,'Edit')+btn('delMember',m.id,'Delete','d')]),'No members found.')}
+function memberForm(id){const m=id?member(id):{};
+ modal(id?'Edit Member':'Add Member',[['id','Member ID','text',m.id||nextId(getMembers(),'M',3),{ro:!!id}],['name','Full Name','text',m.name||''],['email','Email','email',m.email||''],['phone','Phone','tel',m.phone||''],['department','Department / Class','text',m.department||''],['registrationDate','Registration Date','date',m.registrationDate||today()],['status','Status','select',m.status||'Active',{opts:[['Active','Active'],['Inactive','Inactive']]}]],v=>{
+  const ms=getMembers();v.id=v.id.trim();
+  if(!v.id||!v.name.trim())return'Member ID and name are required.';
+  if(!emailOk(v.email))return'Enter a valid email address.';
+  if(!phoneOk(v.phone))return'Enter a valid phone number (10+ digits).';
+  if(ms.some(x=>x.id!==id&&x.id===v.id))return'Duplicate Member ID.';
+  const rec={...m,...v,name:v.name.trim()};
+  saveMembers(id?ms.map(x=>x.id===id?rec:x):[...ms,rec]);toast(id?'Member updated successfully.':'Member added successfully.');render()})}
+// ========================== ISSUE / RETURN
+function issueView(){const tabs=[['issue','Issue Book'],['active','Active Issues / Return / Renew'],['history','Transaction History']];
+ let body='';
+ if(S.tab==='issue'){const ms=getMembers().filter(m=>m.status==='Active'),bs=getBooks().filter(b=>b.availableCopies>0);const t=today();
+  body=`<div class="card"><h2>Issue a Book</h2><form id="isf" novalidate><div class="fg">${field(['member','Member','select','',{opts:[['','Select member'],...ms.map(m=>[m.id,`${m.id} – ${m.name}`])]}])}${field(['book','Book','select','',{opts:[['','Select book'],...bs.map(b=>[b.id,`${b.title} (${b.availableCopies} left)`])]}])}${field(['issue','Issue Date','date',t])}${field(['due','Due Date (auto)','date',calculateDueDate(t),{ro:1}])}</div><div class="err" id="ie" role="alert"></div><button class="btn">Issue Book</button></form></div>`}
+ else if(S.tab==='active'){const l=active().map(t=>{const d=calculateDaysOverdue(t);return[esc(t.id),esc(bt(t.bookId)),esc(mn(t.memberId)),formatDate(t.issueDate),formatDate(t.dueDate),d,inr(calculateFine(d)),badge(txStatus(t))+` (R${t.renewalCount})`,btn('ret',t.id,'Return')+btn('renew',t.id,'Renew')]});
+  body=`<div class="card">${table(['ID','Book','Member','Issued','Due','Days Overdue','Fine','Status','Action'],l,'No active issues.')}</div>`}
+ else body=`<div class="tb"><input data-f="tq" placeholder="Search transactions" aria-label="Search transactions" value="${esc(S.f.tq)}"></div><div class="card" id="tbl"></div>`;
+ return `<div class="tabs">${tabs.map(([k,l])=>`<button class="btn${S.tab===k?' on':''}" data-act="tab" data-id="${k}">${l}</button>`).join('')}</div>${body}`}
+function historyFill(){const q=S.f.tq.toLowerCase();return table(['ID','Book','Member','Issued','Due','Returned','Status'],getTransactions().slice().reverse().filter(t=>!q||[t.id,bt(t.bookId),mn(t.memberId)].some(x=>x.toLowerCase().includes(q))).map(txRow),'No transactions found.')}
+function issueBook(v){const s=getSettings(),m=member(v.member),b=book(v.book);
+ if(!m)return'Select a member.';if(m.status!=='Active')return'Member is inactive.';
+ if(!b)return'Select a book.';if(b.availableCopies<1)return'Book is currently unavailable.';
+ if(!v.issue)return'Issue date is required.';
+ if(activeCount(m.id)>=s.maxBooks)return'Member has reached the maximum issue limit.';
+ const tx=getTransactions();tx.push({id:nextId(tx,'TXN-',4),bookId:b.id,memberId:m.id,issueDate:v.issue,dueDate:calculateDueDate(v.issue),returnDate:null,status:'Issued',renewalCount:0});
+ saveTransactions(tx);saveBooks(getBooks().map(x=>x.id===b.id?{...x,availableCopies:x.availableCopies-1}:x));toast('Book issued successfully.');render()}
+function returnBook(id){const tx=getTransactions(),t=tx.find(x=>x.id===id);if(!t||t.returnDate)return;
+ t.returnDate=today();t.status='Returned';const od=calculateDaysOverdue(t);
+ saveTransactions(tx);saveBooks(getBooks().map(b=>b.id===t.bookId?{...b,availableCopies:Math.min(b.totalCopies,b.availableCopies+1)}:b));
+ if(od>0){const fs=getFines(),amt=calculateFine(od);fs.push({id:nextId(fs,'F',3),transactionId:t.id,memberId:t.memberId,bookId:t.bookId,overdueDays:od,fineAmount:amt,paidAmount:0,remainingAmount:amt,status:'Pending',createdAt:new Date().toISOString()});saveFines(fs);toast(`Book returned. Fine of ${inr(amt)} recorded.`)}
+ else toast('Book returned successfully.');render()}
+function renewBook(id){const s=getSettings(),tx=getTransactions(),t=tx.find(x=>x.id===id);if(!t)return;
+ if(t.renewalCount>=s.maxRenew)return toast('Maximum renewals reached.');
+ if(isOverdue(t))return toast('Overdue books cannot be renewed. Please return and clear the fine.');
+ t.dueDate=addDays(t.dueDate,s.loan);t.renewalCount++;saveTransactions(tx);toast('Book renewed successfully.');render()}
+// ========================== FINE MANAGEMENT
+function finesView(){const l=getFines().slice().reverse().map(f=>[esc(f.id),esc(f.transactionId),esc(mn(f.memberId)),esc(bt(f.bookId)),f.overdueDays,inr(f.fineAmount),inr(f.paidAmount),inr(f.remainingAmount),badge(fineStatus(f)),formatDate((f.createdAt||'').slice(0,10)),f.remainingAmount>0?btn('pay',f.id,'Pay'):'—']);
+ return `<div class="card"><h2>Fines</h2>${table(['Fine ID','Txn','Member','Book','Days','Fine','Paid','Remaining','Status','Date','Action'],l,'No fines found.')}</div>`}
+function payFine(id){const fs=getFines(),f=fs.find(x=>x.id===id);
+ modal('Pay Fine',[['amt',`Amount (remaining ${inr(f.remainingAmount)})`,'number',f.remainingAmount,{min:1,step:'any'}]],v=>{const a=+v.amt;
+  if(!(a>0))return'Invalid payment amount.';if(a>f.remainingAmount)return'Payment cannot exceed the remaining fine.';
+  f.paidAmount+=a;f.remainingAmount=f.fineAmount-f.paidAmount;f.status=fineStatus(f);saveFines(fs);toast('Fine payment recorded.');render()},'Record Payment')}
+// ========================== REPORTS
+function inRange(d){const r=S.f.rr,t=today();if(r==='all')return true;if(r==='today')return d===t;
+ if(r==='week')return dayDiff(d,t)>=0&&dayDiff(d,t)<7;if(r==='month')return d.slice(0,7)===t.slice(0,7);
+ return(!S.f.rf||d>=S.f.rf)&&(!S.f.rt||d<=S.f.rt)}
+function reports(){const s=stats(),fs=getFines(),all=getTransactions(),tx=all.filter(t=>inRange(t.issueDate)),ms=getMembers(),a=active();
+ const kv=o=>Object.entries(o).map(([k,v])=>`<div class="kv"><span>${k}</span><strong>${v}</strong></div>`).join('');
+ const cnt={};all.forEach(t=>cnt[t.bookId]=(cnt[t.bookId]||0)+1);
+ const top=Object.entries(cnt).sort((x,y)=>y[1]-x[1]).slice(0,5).map(([id,n])=>`<div class="kv"><span>${esc(bt(id))}</span><strong>${n}×</strong></div>`).join('')||'<div class="empty">No data.</div>';
+ const paid=fs.reduce((x,f)=>x+f.paidAmount,0),tot=fs.reduce((x,f)=>x+f.fineAmount,0);
+ const o=(v,l)=>`<option value="${v}"${S.f.rr===v?' selected':''}>${l}</option>`;
+ return `<div class="tb"><select data-f="rr" data-full="1" aria-label="Date range">${o('all','All time')}${o('today','Today')}${o('week','This week')}${o('month','This month')}${o('custom','Custom range')}</select>${S.f.rr==='custom'?`<input type="date" data-f="rf" data-full="1" aria-label="From" value="${S.f.rf}"><input type="date" data-f="rt" data-full="1" aria-label="To" value="${S.f.rt}">`:''}</div>
+ <div class="cols"><div class="card"><h2>Library Statistics</h2>${kv({'Total books':s.books,'Total members':s.members,'Available books':s.avail,'Issued books':s.issued,'Overdue books':s.overdue,'Total fines':inr(tot),'Paid fines':inr(paid),'Pending fines':inr(tot-paid)})}</div>
+ <div class="card"><h2>Transactions (selected range)</h2>${kv({'Total':tx.length,'Issued (active)':tx.filter(t=>txStatus(t)==='Issued').length,'Returned':tx.filter(t=>t.returnDate).length,'Overdue':tx.filter(isOverdue).length,'Renewed':tx.filter(t=>t.renewalCount>0).length})}</div>
+ <div class="card"><h2>Members</h2>${kv({'Total':ms.length,'Active':ms.filter(m=>m.status==='Active').length,'Inactive':ms.filter(m=>m.status!=='Active').length,'With active issues':new Set(a.map(t=>t.memberId)).size,'With overdue books':new Set(a.filter(isOverdue).map(t=>t.memberId)).size})}</div>
+ <div class="card"><h2>Most Issued Books</h2>${top}</div></div>`}
+// ========================== SETTINGS
+function settingsView(){const s=getSettings(),F=(n,l,t='text',o={})=>field([n,l,t,s[n],o]);
+ return `<div class="card"><h2>Library Settings</h2><form id="stf" novalidate><div class="fg">${F('name','Library Name')}${F('librarian','Librarian Name')}${F('email','Email','email')}${F('phone','Phone','tel')}${F('loan','Loan Period (days)','number',{min:1})}${F('maxBooks','Max Books Per Member','number',{min:1})}${F('maxRenew','Max Renewals','number',{min:0})}${F('finePerDay','Fine Per Day (₹)','number',{min:0,step:'any'})}</div><div class="err" id="se" role="alert"></div><button class="btn">Save Settings</button> <button type="button" class="btn g d" data-act="reset">Reset all data</button></form></div>`}
+// ========================== EVENTS
+const VIEWS={dashboard,books:booksView,members:membersView,issue:issueView,fines:finesView,reports,settings:settingsView};
+const FILL={books:booksFill,members:membersFill,issue:()=>S.view==='issue'&&S.tab==='history'?historyFill():''};
+const ACT={
+ go:id=>go(id),tab:id=>{S.view='issue';S.tab=id;render()},
+ logout:()=>confirmBox('Log out of the system?',()=>{setAuth(false);$('#p').value='';showApp()}),
+ addBook:()=>bookForm(),editBook:id=>bookForm(id),
+ viewBook:id=>{const b=book(id);info(esc(b.title),`<div class="kv"><span>ID / ISBN</span><span>${esc(b.id)} / ${esc(b.isbn)}</span></div><div class="kv"><span>Author</span><span>${esc(b.author)}</span></div><div class="kv"><span>Category</span><span>${esc(b.category)}</span></div><div class="kv"><span>Publisher</span><span>${esc(b.publisher)} (${b.publicationYear})</span></div><div class="kv"><span>Copies</span><span>${b.availableCopies} of ${b.totalCopies} available</span></div>`)},
+ delBook:id=>{if(active().some(t=>t.bookId===id))return toast('This book cannot be deleted because it is currently issued.');confirmBox('Delete this book permanently?',()=>{saveBooks(getBooks().filter(b=>b.id!==id));toast('Book deleted.');render()})},
+ addMember:()=>memberForm(),editMember:id=>memberForm(id),
+ viewMember:id=>{const m=member(id);info(esc(m.name),`<div class="kv"><span>ID</span><span>${esc(m.id)}</span></div><div class="kv"><span>Email</span><span>${esc(m.email)}</span></div><div class="kv"><span>Phone</span><span>${esc(m.phone)}</span></div><div class="kv"><span>Department</span><span>${esc(m.department)}</span></div><div class="kv"><span>Active issues</span><span>${activeCount(m.id)}</span></div>`)},
+ delMember:id=>{if(activeCount(id))return toast('This member has issued books and cannot be deleted.');confirmBox('Delete this member permanently?',()=>{saveMembers(getMembers().filter(m=>m.id!==id));toast('Member deleted.');render()})},
+ ret:id=>returnBook(id),renew:id=>renewBook(id),pay:id=>payFine(id),
+ reset:()=>confirmBox('This erases all library data and restores the demo data.',()=>{[K.b,K.m,K.t,K.f,K.s].forEach(k=>{delete mem[k];try{localStorage.removeItem(k)}catch{}});seed();toast('Data reset.');render()})};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&ACT[b.dataset.act])ACT[b.dataset.act](b.dataset.id)});
+document.addEventListener('input',e=>{const k=e.target.dataset?.f;if(!k||e.target.dataset.full)return;S.f[k]=e.target.value;fill()});
+document.addEventListener('change',e=>{const k=e.target.dataset?.f;if(!k||!e.target.dataset.full)return;S.f[k]=e.target.value;render()});
+document.addEventListener('submit',e=>{
+ if(e.target.id==='isf'){e.preventDefault();const v=Object.fromEntries(new FormData(e.target)),er=issueBook(v);if(er)$('#ie').textContent=er}
+ if(e.target.id==='stf'){e.preventDefault();const v=Object.fromEntries(new FormData(e.target));['loan','maxBooks','maxRenew','finePerDay'].forEach(k=>v[k]=Number(v[k]));
+  if(!(v.loan>0&&v.maxBooks>0&&v.maxRenew>=0&&v.finePerDay>=0))return $('#se').textContent='Enter valid positive numbers.';
+  if(v.email&&!emailOk(v.email))return $('#se').textContent='Enter a valid email.';saveSettings(v);toast('Settings saved successfully.');render()}});
+document.addEventListener('change',e=>{if(e.target.id==='f_issue'){const d=$('#f_due');if(d&&e.target.value)d.value=calculateDueDate(e.target.value)}});
+$('#burger').onclick=()=>$('#side').classList.toggle('open');
+// ========================== INITIALIZATION
+showApp();
+</script>
+<script>
+// ========================== PRO ADD-ONS (theme, export, backup, insights)
+(()=>{
+const R=document.documentElement,TK='library_theme';
+try{const t=localStorage.getItem(TK);if(t)R.dataset.theme=t}catch{}
+const dark=()=>R.dataset.theme?R.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+const tg=document.createElement('button');tg.className='btn g';tg.setAttribute('aria-label','Toggle theme');document.querySelector('header').append(tg);
+const paint=()=>tg.textContent=dark()?'☀️ Light':'🌙 Dark';paint();
+tg.onclick=()=>{const v=dark()?'light':'dark';R.dataset.theme=v;try{localStorage.setItem(TK,v)}catch{}paint()};
+const dl=(name,type,text)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()};
+const csv=(n,h,rows)=>{const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';dl(n+'-'+today()+'.csv','text/csv','\ufeff'+[h,...rows].map(r=>r.map(q).join(',')).join('\n'));toast('Exported '+n+'.csv')};
+const keys=[K.b,K.m,K.t,K.f,K.s];
+Object.assign(ACT,{
+ xBooks:()=>csv('books',['ID','ISBN','Title','Author','Category','Publisher','Year','Total','Available'],getBooks().map(b=>[b.id,b.isbn,b.title,b.author,b.category,b.publisher,b.publicationYear,b.totalCopies,b.availableCopies])),
+ xMembers:()=>csv('members',['ID','Name','Email','Phone','Department','Registered','Status'],getMembers().map(m=>[m.id,m.name,m.email,m.phone,m.department,m.registrationDate,m.status])),
+ xTx:()=>csv('transactions',['ID','Book','Member','Issued','Due','Returned','Status','Renewals'],getTransactions().map(t=>[t.id,bt(t.bookId),mn(t.memberId),t.issueDate,t.dueDate,t.returnDate||'',txStatus(t),t.renewalCount])),
+ xFines:()=>csv('fines',['ID','Txn','Member','Book','Days','Fine','Paid','Remaining','Status'],getFines().map(f=>[f.id,f.transactionId,mn(f.memberId),bt(f.bookId),f.overdueDays,f.fineAmount,f.paidAmount,f.remainingAmount,fineStatus(f)])),
+ backup:()=>{const d={};keys.forEach(k=>d[k]=load(k,null));dl('library-backup-'+today()+'.json','application/json',JSON.stringify(d,null,1));toast('Backup downloaded.')},
+ restore:()=>$('#rf').click()});
+const rf=document.createElement('input');rf.type='file';rf.id='rf';rf.accept='.json';rf.hidden=true;document.body.append(rf);
+rf.onchange=()=>{const f=rf.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!Array.isArray(d[K.b])||!Array.isArray(d[K.m]))throw 0;confirmBox('Replace all current data with this backup?',()=>{keys.forEach(k=>d[k]!=null&&save(k,d[k]));toast('Backup restored.');render()})}catch{toast('Invalid backup file.')}rf.value=''})};
+const X=(a,t)=>`<button class="btn g" data-act="${a}" style="flex:0 0 auto">${t}</button>`,card=(l,v)=>`<div class="card"><div class="lbl">${l}</div><div class="stat">${v}</div></div>`;
+function extra(){const m=$('#main'),v=S.view,tb=m.querySelector('.tb'),od=active().filter(isOverdue).length,nb=$('#nav [data-id="issue"]');
+ if(nb&&od)nb.insertAdjacentHTML('beforeend',`<span class="nb">${od}</span>`);
+ if(v==='books'&&tb)tb.insertAdjacentHTML('beforeend',X('xBooks','⬇ Export CSV'));
+ if(v==='members'&&tb)tb.insertAdjacentHTML('beforeend',X('xMembers','⬇ Export CSV'));
+ if(v==='issue'&&S.tab==='history'&&tb)tb.insertAdjacentHTML('beforeend',X('xTx','⬇ Export CSV'));
+ if(v==='dashboard'){const s=getSettings(),c={};getBooks().forEach(b=>c[b.category]=(c[b.category]||0)+Number(b.totalCopies||0));const mx=Math.max(1,...Object.values(c));
+  const bars=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="bar"><span>${esc(k)}</span><i><u style="width:${n/mx*100}%"></u></i><b>${n}</b></div>`).join('')||'<div class="empty">No books.</div>';
+  const soon=active().filter(t=>!isOverdue(t)&&dayDiff(today(),t.dueDate)<=3).map(t=>`<div class="kv"><span>${esc(bt(t.bookId))} · ${esc(mn(t.memberId))}</span><strong>${formatDate(t.dueDate)}</strong></div>`).join('')||'<div class="empty">Nothing due in the next 3 days.</div>';
+  m.insertAdjacentHTML('afterbegin',`<div class="hero"><h1>Welcome back, ${esc(s.librarian)} 👋</h1><p>${esc(s.name)} · ${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p></div>`);
+  m.insertAdjacentHTML('beforeend',`<div class="cols"><div class="card"><h2>Collection by Category</h2>${bars}</div><div class="card"><h2>Due Within 3 Days</h2>${soon}</div></div>`)}
+ if(v==='fines'){const fs=getFines(),t=fs.reduce((x,f)=>x+f.fineAmount,0),p=fs.reduce((x,f)=>x+f.paidAmount,0),r=t?Math.round(p/t*100):100;
+  m.insertAdjacentHTML('afterbegin',`<div class="cards">${card('Total fines',inr(t))}${card('Collected',inr(p))}${card('Pending',inr(t-p))}<div class="card"><div class="lbl">Collection rate</div><div class="stat">${r}%</div><div class="pb"><u style="width:${r}%"></u></div></div></div><div class="qa">${X('xFines','⬇ Export CSV')}</div>`)}
+ if(v==='settings')m.insertAdjacentHTML('beforeend',`<div class="card"><h2>Data &amp; Backup</h2><p class="lbl">Download a full copy of your library data, or restore from a previous backup.</p><button class="btn" data-act="backup">Download backup</button> <button class="btn g" data-act="restore">Restore backup</button></div>`)}
+const base=render;render=function(){base();extra()};
+document.querySelector('.wrap').addEventListener('click',e=>{if(!e.target.closest('#burger'))$('#side').classList.remove('open')});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){const i=$('main input');if(i){e.preventDefault();i.focus()}}});
+if(loggedIn())render();
+})();
+</script>
+</body>
+</html>
